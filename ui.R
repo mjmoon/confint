@@ -26,7 +26,9 @@ shinyUI(fluidPage(
 
     # Show a plot of the generated distribution
     mainPanel(
+      h5("Confidence intervals of simulated samples"),
       plotOutput("ciPlot", height = "350px"),
+      h5("Sampling density"),
       plotOutput("distPlot", height = "100px"),
       br(),
       fluidRow(column(3, actionButton("sim", HTML("<b>Simulate</br>New Data</b>"), width = "100%",

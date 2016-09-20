@@ -17,13 +17,13 @@ plotdist <- function(input){
     # xlims <- c(input$parm1 - 5*s, input$parm1 + 5*s)
     # x <- seq(xlims[1], xlims[2], s/50)
     xlims <- c(input$parm1 - input$parm2, input$parm1 + input$parm2)
-    x <- seq(xlims[1], xlims[2], input$parm2/50)
+    x <- seq(xlims[1], xlims[2], input$parm2/1000)
     plot(x, dnorm(x, input$parm1, s), 
          xlim = xlims, ylim = c(0, dnorm(input$parm1, input$parm1, s)),
          type = "l", axes = FALSE, ylab = "", xlab = "")
     # shade confidence interval
     # x <- seq(input$parm1 - cilvlq*s, input$parm1 + cilvlq*s, s/50)
-    x <- seq(input$parm1 - cilvlq*s, input$parm1 + cilvlq*s, input$parm2/50)
+    x <- seq(input$parm1 - cilvlq*s, input$parm1 + cilvlq*s, input$parm2/1000)
     polygon(x, dnorm(x, input$parm1, s), 
             border = NA, col = fillcol)
     polygon(c(rep(min(x),2), rep(max(x),2)), 
@@ -35,14 +35,12 @@ plotdist <- function(input){
          input$cilvl, cex = 1.8, font = 2)
     text(xlims[1], 0, expression(paste("N(", mu, ", ", sigma^"2", "/n)", sep = "")),
          cex = 1.2, adj = c(0,-0.2))
-    text(xlims[1], dnorm(input$parm1, input$parm1, s),
-         "Sampling density", cex = 1.2, adj = c(0,1), font = 2)
     axis(1, at = round(c(xlims, input$parm1),2))
   }
 }
 # plot simulated confidence intervals
 plotcint <- function(input){
-  par(mar = c(0,0,3,0))
+  par(mar = c(0,0,0,0))
   ## Normal distribution ##
   if(input$dist == 1){
     cilvlq <- -qnorm((1 - input$cilvl)/2)
@@ -69,11 +67,6 @@ plotcint <- function(input){
     segments(sts$lci, 1:input$niter, sts$uci, 1:input$niter,
              ifelse(sts$incmu, 1, 2))
     points(sts$xbar, 1:input$niter, pch = 18, col = ifelse(sts$incmu, 1, 2))
-    # label
-    par(xpd = TRUE)
-    text(xlims[1], input$niter + 7,
-         "Confidence intervals of simulated samples", cex = 1.2, adj = 0, font = 2)
-    par(xpd = FALSE)
   }
 }
 # plot mu-in-ci rates
