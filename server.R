@@ -4,32 +4,28 @@
 # Shiny server                                              #
 # rsconnect::deployApp(".") to deploy                       #
 #############################################################
-library(shiny)
-
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   library(RColorBrewer)
   source("cicalc.R")
   palette(brewer.pal(8, "Set2"))
   output$distPlot <- renderPlot(plotdist(input))
-  output$ciPlot <- renderPlot(plotcint(input))
+  output$ciPlot <- renderPlot(isolate(plotci(input$niter, input$nsamp, input$cilvl)))
   output$countci <- renderText(paste(nciinc[1], "/", 
-                                     input$niter, "=", 
+                                     isolate(input$niter), "=", 
                                      round(rciinc[1], 2)))
-  output$freqPlot <- renderPlot(plotciinc(input))
+  output$freqPlot <- renderPlot({plotciinc(isolate(input$cilvl), rciinc)})
   
   observeEvent(input$sim, 
                {
-                 output$ciPlot <- renderPlot(plotcint(input))
+                 output$ciPlot <- renderPlot(isolate(plotci(input$niter, input$nsamp, input$cilvl)))
                  output$countci <- renderText(paste(nciinc[1], "/", 
-                                                    input$niter, "=", 
+                                                    isolate(input$niter), "=", 
                                                     round(rciinc[1], 2)))
-                 output$freqPlot <- renderPlot(plotciinc(input))
-               }
+                 output$freqPlot <- renderPlot({plotciinc(isolate(input$cilvl), rciinc)})
+                 }
                )
-  observeEvent(input$dist, output$freqPlot <- renderPlot(plotciinc(input)))
-  observeEvent(input$parm1, output$freqPlot <- renderPlot(plotciinc(input)))
-  observeEvent(input$parm2, output$freqPlot <- renderPlot(plotciinc(input)))
-  observeEvent(input$cilvl, output$freqPlot <- renderPlot(plotciinc(input)))
-  observeEvent(input$nsamp, output$freqPlot <- renderPlot(plotciinc(input)))
-  observeEvent(input$niter, output$freqPlot <- renderPlot(plotciinc(input)))
+  observeEvent(input$reset, {
+    nciinc <<- NULL; rciinc <<- NULL
+    output$freqPlot <- renderPlot(plotciinc(input$cilvl, -1))
+    })
 })

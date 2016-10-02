@@ -3,43 +3,34 @@
 #                                                           #
 # Shiny user interface                                      #
 #############################################################
-library(shiny)
-
-shinyUI(fluidPage(
-
+shinyUI(
+  fluidPage(
   # Application title
-  titlePanel("Confidence interval demonstration"),
-
+  titlePanel("Confidence Interval"),
   # Sidebar with a inputs 
   sidebarLayout(
     sidebarPanel(
-      selectInput("dist", "Distribution", 
-                  list("Normal" = 1),
-                  width = "100%"
-      ),
-      numericInput("parm1", "Mean", 0),
-      numericInput("parm2", "Standard Deviation", 1),
       sliderInput("cilvl", "Confidence Level", 0.55, 0.95, 0.95, 0.05),
-      sliderInput("nsamp", "Sample Size (n)", 50, 1000, 50, 10),
-      sliderInput("niter", "Number of Samples", 10, 100, 50, 10)
+      br(),
+      sliderInput("nsamp", "Sample Size per Simulation", 10, 1000, 100, 10),
+      br(),
+      sliderInput("niter", "Number of Simulations", 10, 100, 50, 10),
+      br(),
+      actionButton("sim", strong("Simulate"), 
+                   width = "100%", height = "150px",
+                   style = "background-color:#2377BA; color:white;")
     ),
-
     # Show a plot of the generated distribution
     mainPanel(
-      h5("Confidence intervals of simulated samples"),
+      h5("Confidence intervals of simulated sample means"),
       plotOutput("ciPlot", height = "350px"),
-      h5("Sampling density"),
+      h5("Asymptotic distribution of sample mean"),
       plotOutput("distPlot", height = "100px"),
       br(),
-      fluidRow(column(3, actionButton("sim", HTML("<b>Simulate</br>New Data</b>"), width = "100%",
-                                      style='height:100px; ')),
-               column(9, strong("Frequency of observing the parameter in CI"), align = "center",
-                      fluidRow(column(4,  textOutput("countci"), style = "padding:30px"),
-                               column(8, plotOutput("freqPlot", height = "80px")))
-                      )
-               )
-    ),
-    
+      fluidRow(strong("Frequency of observing the parameter in CI"), align = "center"),
+      fluidRow(column(8, plotOutput("freqPlot", height = "80px"), actionLink("reset", "Reset")),
+               column(4,  textOutput("countci"), style = "padding:30px"))
+      ),
     position = "right"
   )
 ))
